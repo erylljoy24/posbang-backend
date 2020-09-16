@@ -16,6 +16,7 @@ class CreateMenusTable extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->double('amount', 8, 2);
             $table->unsignedBigInteger('cat_id')->unsigned();
             $table->foreign('cat_id')->references('id')->on('categories');
             $table->timestamps();
