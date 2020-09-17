@@ -31,9 +31,14 @@ class CategoriesTableSeeder extends Seeder
 	        	'updated_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
-                'name' => 'All in One',
+                'name' => 'Combo Meal',
                 'created_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s'),
 	        	'updated_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'Rice Meal',
+                'created_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => \Carbon\Carbon::now()->format('Y-m-d H:i:s')
             ]
         ];
 
