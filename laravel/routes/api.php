@@ -17,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/login/user', 'Auth\LoginController@userlogin');
+Route::get('/menu', 'MenuController@getAllMenus');
