@@ -9,19 +9,27 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Client as OClient;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
     public $successStatus = 200;
+    use AuthenticatesUsers;
 
-    public function login() {
-        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-            $oClient = OClient::where('password_client', 1)->first();
-            return $this->getTokenAndRefreshToken($oClient, request('email'), request('password'));
+
+    public function login(Request $request) {
+//        return $request;
+        $this->validateLogin($request);
+
+        if ($this->attemptLogin($request)) {
+            $user = $this->guard()->user();
+            return response()->json([
+                'data' => $user->toArray(),
+            ]);
         }
-        else {
-            return response()->json(['error'=>'Unauthorised'], 401);
-        }
+
+        return $this->sendFailedLoginResponse($request);
     }
 
     public function register(Request $request) {
@@ -36,29 +44,11 @@ class UserController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $password = $request->password;
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
+        $input['api_token'] = Str::random(60);
         $user = User::create($input);
-        $oClient = OClient::where('password_client', 1)->first();
-        return $this->getTokenAndRefreshToken($oClient, $user->email, $password);
-    }
 
-    public function getTokenAndRefreshToken(OClient $oClient, $email, $password) {
-        $oClient = OClient::where('password_client', 1)->first();
-        $http = new Client;
-        $response = $http->request('POST', 'http://mylemp-nginx/oauth/token', [
-            'form_params' => [
-                'grant_type' => 'password',
-                'client_id' => $oClient->id,
-                'client_secret' => $oClient->secret,
-                'username' => $email,
-                'password' => $password,
-                'scope' => '*',
-            ],
-        ]);
-
-        $result = json_decode((string) $response->getBody(), true);
-        return response()->json($result, $this->successStatus);
+        return $user;
     }
 }

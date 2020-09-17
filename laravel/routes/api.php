@@ -20,3 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('login', 'UserController@login');
 Route::post('register', 'UserController@register');
+
+Route::get('/get/cart', 'CartController@getCartList');
+Route::get('/menu', 'MenuController@getAllMenus');
+Route::post('/add/cart', 'CartController@addToCart');
